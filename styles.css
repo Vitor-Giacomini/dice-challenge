@@ -1,0 +1,18 @@
+body {
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    height: 100vh;
+    background-color: #f7f7f7;
+  }
+  
+  canvas {
+    border: 1px solid #000;
+  }
+
+  #toggle-axes-btn{
+    margin-bottom: 50px;
+  }
+  
