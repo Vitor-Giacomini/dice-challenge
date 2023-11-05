@@ -88,16 +88,16 @@ function separate(distance) {
     const newPoints = side.points.map(point => {
       pointNumber++;
       if(!inclined){ // Dado reto
-        if(centerX <= currentDiceX && centerY > currentDiceY){
+        if(centerX-0.1 <= currentDiceX && centerY-0.1 > currentDiceY){
           return new Point(point.x, point.y + distance); // vai pra cima
         }
-        if(centerX >= currentDiceX && centerY < currentDiceY){
+        if(centerX+0.1 >= currentDiceX && centerY+0.1 < currentDiceY){
           return new Point(point.x, point.y - distance); // vai pra baixo
         }
-        if(centerX > currentDiceX && centerY >= currentDiceY){
+        if(centerX-0.1 > currentDiceX && centerY+0.1 >= currentDiceY){
           return new Point(point.x + distance, point.y); // vai pra direita
         }
-        if(centerX < currentDiceX && centerY <= currentDiceY){ 
+        if(centerX+0.1 < currentDiceX && centerY-0.1 <= currentDiceY){ 
           return new Point(point.x - distance, point.y); // vai pra esquerda
         }
         return new Point(point.x, point.y);
@@ -123,16 +123,16 @@ function separate(distance) {
       console.log(currentDice[0].dots);
       if(!inclined){ // Dado reto
         console.log(dotNumber);
-        if(centerX <= currentDiceX && centerY > currentDiceY){
+        if(centerX-0.1 <= currentDiceX && centerY-0.1 > currentDiceY){
           return new Point(dot.x, dot.y + distance); // vai pra cima
         }
-        if(centerX >= currentDiceX && centerY < currentDiceY){
+        if(centerX+0.1 >= currentDiceX && centerY+0.1 < currentDiceY){
           return new Point(dot.x, dot.y - distance); // vai pra baixo
         }
-        if(centerX > currentDiceX && centerY >= currentDiceY){
+        if(centerX-0.1 > currentDiceX && centerY+0.1 >= currentDiceY){
           return new Point(dot.x + distance, dot.y); // vai pra direita
         }
-        if(centerX < currentDiceX && centerY <= currentDiceY){ 
+        if(centerX+0.1 < currentDiceX && centerY-0.1 <= currentDiceY){ 
           return new Point(dot.x - distance, dot.y); // vai pra esquerda
         }
         return new Point(dot.x, dot.y);
