@@ -17,6 +17,7 @@ body {
     flex-direction: column;
     position: absolute;
     left: 65px;
+    margin-bottom: -20px;
   }
 
   button{
