@@ -4,4 +4,4 @@ export class Side {
     this.dots = dots;   
   }
 }
-// Objeto Lado com 2 atributos: Os pontos que formam a figura e a quantidade de pontos do dado
+// Objeto Lado com 2 atributos: Os pontos que formam o polígono e uma lista de pontos que formam o valor do lado
