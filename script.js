@@ -2,7 +2,8 @@ import { Point } from "./models/point.js";
 import { Side } from "./models/side.js";
 
 let currentDice = [];
-let sideSize = 50;
+let sideSize = 100;
+let inclined = false;
 
 document.addEventListener("DOMContentLoaded", function () {
   setupButtons();
@@ -36,9 +37,12 @@ function scale(xScale, yScale) {
     return new Side(newPoints, side.dots);
   });
   draw(newDice);
+  sideSize = Math.abs(currentDice[0].points[0].x - currentDice[0].points[2].x)
 }
 
 function rotate(angle) {
+  console.log(sideSize);
+  inclined = !inclined;
   let radians = angle * Math.PI / 180;
   const newDice = currentDice.map(side => {
     const newPoints = side.points.map(point => {
@@ -47,28 +51,48 @@ function rotate(angle) {
     });
     return new Side(newPoints, side.dots);
   });
-  draw(newDice);
+  draw(newDice, radians);
 }
 
 function separate(distance) {
+  console.log(sideSize);
+  let radians = 45 * Math.PI / 180;
   
   const newDice = currentDice.map(side => {
     let pointNumber = -1;
     const newPoints = side.points.map(point => {
       pointNumber++;
-      if(point.x == currentDice[0].points[pointNumber].x && point.y > currentDice[0].points[pointNumber].y){
-        return new Point(point.x, point.y + distance); // vai pra cima
+      if(!inclined){ // Dado reto
+        if(point.x <= currentDice[0].points[pointNumber].x && point.y > currentDice[0].points[pointNumber].y){
+          return new Point(point.x, point.y + distance); // vai pra cima
+        }
+        if(point.x >= currentDice[0].points[pointNumber].x && point.y < currentDice[0].points[pointNumber].y){
+          return new Point(point.x, point.y - distance); // vai pra baixo
+        }
+        if(point.x > currentDice[0].points[pointNumber].x && point.y >= currentDice[0].points[pointNumber].y){
+          return new Point(point.x + distance, point.y); // vai pra direita
+        }
+        if(point.x < currentDice[0].points[pointNumber].x && point.y <= currentDice[0].points[pointNumber].y){ 
+          return new Point(point.x - distance, point.y); // vai pra esquerda
+        }
+        return new Point(point.x, point.y);
       }
-      if(point.x == currentDice[0].points[pointNumber].x && point.y < currentDice[0].points[pointNumber].y){
-        return new Point(point.x, point.y - distance); // vai pra baixo
+      if(inclined){ // Dado inclinado
+        if(point.x < currentDice[0].points[pointNumber].x && point.y > currentDice[0].points[pointNumber].y){
+          return new Point(point.x - distance * Math.cos(radians), point.y + distance * Math.sin(radians)); // vai pra cima
+        }        
+        if(point.x < currentDice[0].points[pointNumber].x && point.y < currentDice[0].points[pointNumber].y){
+          return new Point(point.x - distance * Math.cos(radians), point.y  - distance * Math.sin(radians)); // vai pra baixo
+        }
+        if(point.x > currentDice[0].points[pointNumber].x && point.y < currentDice[0].points[pointNumber].y){
+          return new Point(point.x + distance * Math.cos(radians), point.y - distance * Math.sin(radians)); // vai pra direita
+        }
+        if(point.x > currentDice[0].points[pointNumber].x && point.y > currentDice[0].points[pointNumber].y){ 
+          return new Point(point.x + distance * Math.cos(radians), point.y + distance * Math.sin(radians)); // vai pra esquerda
+        }
+        return new Point(point.x, point.y);
       }
-      if(point.x > currentDice[0].points[pointNumber].x && point.y == currentDice[0].points[pointNumber].y){
-        return new Point(point.x + distance, point.y); // vai pra direita
-      }
-      if(point.x < currentDice[0].points[pointNumber].x && point.y == currentDice[0].points[pointNumber].y){ 
-        return new Point(point.x - distance, point.y); // vai pra esquerda
-      }
-      return new Point(point.x, point.y);
+      
     });
     return new Side(newPoints, side.dots);
   });
@@ -76,11 +100,10 @@ function separate(distance) {
 }
 
 
-function draw(dice) {
+function draw(dice, radians) {
   const canvas = document.getElementById('cartesian-canvas');
   const ctx = canvas.getContext('2d');
   currentDice = dice;
-  sideSize = Math.abs(dice[0].points[0].x - dice[0].points[2].x)
 
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -102,22 +125,23 @@ function draw(dice) {
     }
     ctx.closePath();
     ctx.stroke();
-    drawDots(ctx, side);
+    drawDots(ctx, side, radians);
   });
 }
 
 function drawAxes(ctx){
   ctx.strokeStyle = 'lightgrey';
   ctx.beginPath();
-  ctx.moveTo(0, -550);
-  ctx.lineTo(0, 550);
+  ctx.moveTo(0, -500);
+  ctx.lineTo(0, 500);
   ctx.moveTo(550, 0);
   ctx.lineTo(-550, 0);
   ctx.closePath();
   ctx.stroke();
 }
 
-function drawDots(ctx, side) {
+function drawDots(ctx, side, radians) {
+  console.log(radians);
   const centerX = (side.points[0].x + side.points[2].x) / 2;
   const centerY = (side.points[0].y + side.points[2].y) / 2;
   const dotRadius = Math.abs(side.points[0].x - side.points[2].x) / 20;
@@ -132,9 +156,9 @@ function drawDots(ctx, side) {
         drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
     },
     3: () => {
-        drawDot(ctx, centerX - offset, centerY + offset, dotRadius);
+        drawDot(ctx, centerX - offset + (centerX * Math.cos(radians) - centerY * Math.sin(radians)), centerY + offset + (centerX * Math.sin(radians) + centerY * Math.cos(radians)), dotRadius);
         drawDot(ctx, centerX, centerY, dotRadius);
-        drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
+        drawDot(ctx, centerX + offset + (centerX * Math.cos(radians) - centerY * Math.sin(radians)), centerY - offset + (centerX * Math.sin(radians) + centerY * Math.cos(radians)), dotRadius);
     },
     4: () => {
         drawDot(ctx, centerX - offset, centerY - offset, dotRadius);
