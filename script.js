@@ -70,7 +70,7 @@ function rotate(angle) {
     });
     return new Side(newPoints, newDots);
   });
-  draw(newDice, radians);
+  draw(newDice);
 }
 
 function separate(distance) {
