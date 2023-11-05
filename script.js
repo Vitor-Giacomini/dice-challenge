@@ -9,12 +9,23 @@ document.addEventListener("DOMContentLoaded", function () {
   setupButtons();
 
   const dice = [
-    new Side([new Point(50, 50), new Point(50, -50), new Point(-50, -50), new Point(-50, 50), new Point(50, 50)], 1),
-    new Side([new Point(150, 50), new Point(150, -50), new Point(50, -50), new Point(50, 50), new Point(150, 50)], 2),
-    new Side([new Point(50, 150), new Point(50, 50), new Point(-50, 50), new Point(-50, 150), new Point(50, 150)], 3),
-    new Side([new Point(50, -50), new Point(50, -150), new Point(-50, -150), new Point(-50, -50), new Point(50, -50)], 4),
-    new Side([new Point(-50, 50), new Point(-50, -50), new Point(-150, -50), new Point(-150, 50), new Point(-50, 50)], 5),
-    new Side([new Point(-250, 50), new Point(-250, -50), new Point(-150, -50), new Point(-150, 50), new Point(-150, 50)], 6)
+    new Side([new Point(50, 50), new Point(50, -50), new Point(-50, -50), new Point(-50, 50), new Point(50, 50)], 
+    [new Point(0, 0)]),
+
+    new Side([new Point(150, 50), new Point(150, -50), new Point(50, -50), new Point(50, 50), new Point(150, 50)], 
+    [new Point(80, 20), new Point(120, -20)]),
+
+    new Side([new Point(50, 150), new Point(50, 50), new Point(-50, 50), new Point(-50, 150), new Point(50, 150)], 
+    [new Point(-20, 120), new Point(0, 100), new Point(20, 80)]),
+
+    new Side([new Point(50, -50), new Point(50, -150), new Point(-50, -150), new Point(-50, -50), new Point(50, -50)],
+    [new Point(-20 , -80), new Point(20, -80), new Point(-20, -120), new Point(20, -120)]),
+
+    new Side([new Point(-50, 50), new Point(-50, -50), new Point(-150, -50), new Point(-150, 50), new Point(-50, 50)], 
+    [new Point(-120, 20), new Point(-80, 20), new Point(-100, 0), new Point(-120, -20), new Point(-80, -20)]),
+
+    new Side([new Point(-150, 50), new Point(-150, -50),  new Point(-250, -50), new Point(-250, 50), new Point(-150, 50)], 
+    [new Point(-220, 20), new Point(-220, 0), new Point(-220, -20),  new Point(-180, 20), new Point(-180, 0), new Point(-180, -20)])
   ]
   draw(dice);
 });
@@ -24,7 +35,10 @@ function translate(xTranslation, yTranslation) {
     const newPoints = side.points.map(point => {
       return new Point(point.x + xTranslation, point.y + yTranslation);
     });
-    return new Side(newPoints, side.dots);
+    const newDots = side.dots.map(dot => {
+      return new Point(dot.x + xTranslation, dot.y + yTranslation);
+    })
+    return new Side(newPoints, newDots);
   });
   draw(newDice);
 }
@@ -34,14 +48,15 @@ function scale(xScale, yScale) {
     const newPoints = side.points.map(point => {
       return new Point(point.x * xScale, point.y * yScale);
     });
-    return new Side(newPoints, side.dots);
+    const newDots = side.dots.map(dot => {
+      return new Point(dot.x * xScale, dot.y * yScale);
+    });
+    return new Side(newPoints, newDots);
   });
   draw(newDice);
-  sideSize = Math.abs(currentDice[0].points[0].x - currentDice[0].points[2].x)
 }
 
 function rotate(angle) {
-  console.log(sideSize);
   inclined = !inclined;
   let radians = angle * Math.PI / 180;
   const newDice = currentDice.map(side => {
@@ -49,30 +64,40 @@ function rotate(angle) {
       return new Point((point.x * Math.cos(radians) - point.y * Math.sin(radians)), 
       (point.x * Math.sin(radians) + point.y * Math.cos(radians)));
     });
-    return new Side(newPoints, side.dots);
+    const newDots = side.dots.map(dot => {
+      return new Point((dot.x * Math.cos(radians) - dot.y * Math.sin(radians)), 
+      (dot.x * Math.sin(radians) + dot.y * Math.cos(radians)));
+    });
+    return new Side(newPoints, newDots);
   });
   draw(newDice, radians);
 }
 
 function separate(distance) {
-  console.log(sideSize);
   let radians = 45 * Math.PI / 180;
   
   const newDice = currentDice.map(side => {
+
     let pointNumber = -1;
+    let dotNumber = -1;
+    const centerX = (side.points[0].x + side.points[2].x) / 2;
+    const centerY = (side.points[0].y + side.points[2].y) / 2;
+    const currentDiceX = (currentDice[0].points[0].x + currentDice[0].points[2].x)/2;
+    const currentDiceY = (currentDice[0].points[0].y + currentDice[0].points[2].y)/2;
+
     const newPoints = side.points.map(point => {
       pointNumber++;
       if(!inclined){ // Dado reto
-        if(point.x <= currentDice[0].points[pointNumber].x && point.y > currentDice[0].points[pointNumber].y){
+        if(centerX <= currentDiceX && centerY > currentDiceY){
           return new Point(point.x, point.y + distance); // vai pra cima
         }
-        if(point.x >= currentDice[0].points[pointNumber].x && point.y < currentDice[0].points[pointNumber].y){
+        if(centerX >= currentDiceX && centerY < currentDiceY){
           return new Point(point.x, point.y - distance); // vai pra baixo
         }
-        if(point.x > currentDice[0].points[pointNumber].x && point.y >= currentDice[0].points[pointNumber].y){
+        if(centerX > currentDiceX && centerY >= currentDiceY){
           return new Point(point.x + distance, point.y); // vai pra direita
         }
-        if(point.x < currentDice[0].points[pointNumber].x && point.y <= currentDice[0].points[pointNumber].y){ 
+        if(centerX < currentDiceX && centerY <= currentDiceY){ 
           return new Point(point.x - distance, point.y); // vai pra esquerda
         }
         return new Point(point.x, point.y);
@@ -92,9 +117,44 @@ function separate(distance) {
         }
         return new Point(point.x, point.y);
       }
+    });
+
+    const newDots = side.dots.map(dot => {
+      console.log(currentDice[0].dots);
+      if(!inclined){ // Dado reto
+        console.log(dotNumber);
+        if(centerX <= currentDiceX && centerY > currentDiceY){
+          return new Point(dot.x, dot.y + distance); // vai pra cima
+        }
+        if(centerX >= currentDiceX && centerY < currentDiceY){
+          return new Point(dot.x, dot.y - distance); // vai pra baixo
+        }
+        if(centerX > currentDiceX && centerY >= currentDiceY){
+          return new Point(dot.x + distance, dot.y); // vai pra direita
+        }
+        if(centerX < currentDiceX && centerY <= currentDiceY){ 
+          return new Point(dot.x - distance, dot.y); // vai pra esquerda
+        }
+        return new Point(dot.x, dot.y);
+      }
+      if(inclined){ // Dado inclinado
+        if(dot.x < currentDice[0].dots[0].x && dot.y > currentDice[0].dots[0].y){
+          return new Point(dot.x - distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); // vai pra cima
+        }        
+        if(dot.x < currentDice[0].dots[0].x && dot.y < currentDice[0].dots[0].y){
+          return new Point(dot.x - distance * Math.cos(radians), dot.y  - distance * Math.sin(radians)); // vai pra baixo
+        }
+        if(dot.x > currentDice[0].dots[0].x && dot.y < currentDice[0].dots[0].y){
+          return new Point(dot.x + distance * Math.cos(radians), dot.y - distance * Math.sin(radians)); // vai pra direita
+        }
+        if(dot.x > currentDice[0].dots[0].x && dot.y > currentDice[0].dots[0].y){ 
+          return new Point(dot.x + distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); // vai pra esquerda
+        }
+        return new Point(dot.x, dot.y);
+      }
       
     });
-    return new Side(newPoints, side.dots);
+    return new Side(newPoints, newDots);
   });
   draw(newDice);
 }
@@ -119,13 +179,21 @@ function draw(dice, radians) {
   dice.forEach(side => {
     ctx.beginPath();
     ctx.moveTo(side.points[0].x, side.points[0].y);
-
     for (let i = 1; i < side.points.length; i++) {
       ctx.lineTo(side.points[i].x, side.points[i].y);
     }
     ctx.closePath();
     ctx.stroke();
-    drawDots(ctx, side, radians);
+  
+    sideSize = !inclined
+    ? Math.abs(currentDice[0].points[0].x - currentDice[0].points[2].x)
+    : Math.abs(currentDice[0].points[0].x - currentDice[0].points[1].x)/Math.sin(45 * Math.PI/180);
+
+    for (let i = 0; i < side.dots.length; i++) {
+      ctx.beginPath();
+      ctx.arc(side.dots[i].x, side.dots[i].y, sideSize/20, 0, Math.PI * 2, true);
+      ctx.fill();
+    }
   });
 }
 
@@ -138,58 +206,6 @@ function drawAxes(ctx){
   ctx.lineTo(-550, 0);
   ctx.closePath();
   ctx.stroke();
-}
-
-function drawDots(ctx, side, radians) {
-  console.log(radians);
-  const centerX = (side.points[0].x + side.points[2].x) / 2;
-  const centerY = (side.points[0].y + side.points[2].y) / 2;
-  const dotRadius = Math.abs(side.points[0].x - side.points[2].x) / 20;
-  const offset = Math.abs(side.points[0].x - side.points[2].x) / 5;
-
-  const dotPatterns = {
-    1: () => {
-        drawDot(ctx, centerX, centerY, dotRadius);
-    },
-    2: () => {
-        drawDot(ctx, centerX - offset, centerY + offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
-    },
-    3: () => {
-        drawDot(ctx, centerX - offset + (centerX * Math.cos(radians) - centerY * Math.sin(radians)), centerY + offset + (centerX * Math.sin(radians) + centerY * Math.cos(radians)), dotRadius);
-        drawDot(ctx, centerX, centerY, dotRadius);
-        drawDot(ctx, centerX + offset + (centerX * Math.cos(radians) - centerY * Math.sin(radians)), centerY - offset + (centerX * Math.sin(radians) + centerY * Math.cos(radians)), dotRadius);
-    },
-    4: () => {
-        drawDot(ctx, centerX - offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX - offset, centerY + offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY + offset, dotRadius);
-    },
-    5: () => {
-        drawDot(ctx, centerX - offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX - offset, centerY + offset, dotRadius);
-        drawDot(ctx, centerX, centerY, dotRadius);
-        drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY + offset, dotRadius);
-    },
-    6: () => {
-        drawDot(ctx, centerX - offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX - offset, centerY, dotRadius);
-        drawDot(ctx, centerX - offset, centerY + offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY - offset, dotRadius);
-        drawDot(ctx, centerX + offset, centerY, dotRadius);
-        drawDot(ctx, centerX + offset, centerY + offset, dotRadius);
-    }
-  };
-
-    dotPatterns[side.dots]();
-}
-
-function drawDot(ctx, x, y, dotRadius) {
-  ctx.beginPath();
-  ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
-  ctx.fill();
 }
 
 function setupButtons(){
