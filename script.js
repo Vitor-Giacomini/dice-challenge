@@ -6,7 +6,7 @@ let sideSize = 100;
 let inclined = false;
 
 document.addEventListener("DOMContentLoaded", function () {
-  setupButtons();
+  setupButtons(); // Monta os botões e o dado no seu estado inicial
 
   const dice = [
     new Side([new Point(50, 50), new Point(50, -50), new Point(-50, -50), new Point(-50, 50), new Point(50, 50)], 
@@ -120,9 +120,7 @@ function separate(distance) {
     });
 
     const newDots = side.dots.map(dot => {
-      console.log(currentDice[0].dots);
       if(!inclined){ // Dado reto
-        console.log(dotNumber);
         if(centerX-0.1 <= currentDiceX && centerY-0.1 > currentDiceY){
           return new Point(dot.x, dot.y + distance); // vai pra cima
         }
@@ -139,16 +137,20 @@ function separate(distance) {
       }
       if(inclined){ // Dado inclinado
         if(dot.x < currentDice[0].dots[0].x && dot.y > currentDice[0].dots[0].y){
-          return new Point(dot.x - distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); // vai pra cima
+          return new Point(dot.x - distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); 
+          // vai pra cima
         }        
         if(dot.x < currentDice[0].dots[0].x && dot.y < currentDice[0].dots[0].y){
-          return new Point(dot.x - distance * Math.cos(radians), dot.y  - distance * Math.sin(radians)); // vai pra baixo
+          return new Point(dot.x - distance * Math.cos(radians), dot.y  - distance * Math.sin(radians)); 
+          // vai pra baixo
         }
         if(dot.x > currentDice[0].dots[0].x && dot.y < currentDice[0].dots[0].y){
-          return new Point(dot.x + distance * Math.cos(radians), dot.y - distance * Math.sin(radians)); // vai pra direita
+          return new Point(dot.x + distance * Math.cos(radians), dot.y - distance * Math.sin(radians)); 
+          // vai pra direita
         }
         if(dot.x > currentDice[0].dots[0].x && dot.y > currentDice[0].dots[0].y){ 
-          return new Point(dot.x + distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); // vai pra esquerda
+          return new Point(dot.x + distance * Math.cos(radians), dot.y + distance * Math.sin(radians)); 
+          // vai pra esquerda
         }
         return new Point(dot.x, dot.y);
       }
@@ -160,7 +162,7 @@ function separate(distance) {
 }
 
 
-function draw(dice, radians) {
+function draw(dice) {
   const canvas = document.getElementById('cartesian-canvas');
   const ctx = canvas.getContext('2d');
   currentDice = dice;
