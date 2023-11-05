@@ -4,4 +4,5 @@ export class Point {
     this.y = y;
   }
 }
-// Objeto Ponto com 2 atributos: Suas coordenadas
+// Objeto Ponto com 2 atributos: 
+// Suas coordenadas x e y.
