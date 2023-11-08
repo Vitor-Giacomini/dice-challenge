@@ -247,6 +247,56 @@ function setupButtons(){
   if (separateButton) {
     separateButton.addEventListener('click', () => separate(sideSize/2));
   }
+
+  const resetButton = document.getElementById('reset');
+  if (resetButton) {
+    resetButton.addEventListener('click', () => location.reload());
+  }
+  const taskAButton = document.getElementById('task-a');
+  if (taskAButton) {
+    taskAButton.addEventListener('click', () => translate(-sideSize/2, 0));
+  }
+  const taskBButton = document.getElementById('task-b');
+  if (taskBButton) {
+    taskBButton.addEventListener('click', () => translate(0, -sideSize/2));
+  }
+  const taskCButton = document.getElementById('task-c');
+if (taskCButton) {
+  taskCButton.addEventListener('click', () => {
+    translate(0, sideSize/2);
+    setTimeout(() => { translate(sideSize/2, 0);}, 1000);
+  });
+}
+  const taskDButton = document.getElementById('task-d');
+  if (taskDButton) {
+    taskDButton.addEventListener('click', () => scale(1.2, 1.2));
+  }
+  const taskEButton = document.getElementById('task-e');
+  if (taskEButton) {
+    taskEButton.addEventListener('click', () => {
+    translate(sideSize/2, 0);
+    setTimeout(() => { translate(sideSize/2, 0);}, 1000);
+    setTimeout(() => { scale(0.5, 0.5);}, 2000);
+    setTimeout(() => { translate(-sideSize/2, 0)}, 3000);
+    setTimeout(() => { translate(-sideSize/2, 0)}, 4000);
+    setTimeout(() => { translate(-sideSize/2, 0)}, 5000);
+    setTimeout(() => { translate(-sideSize/2, 0)}, 6000);
+    }); 
+  }
+  const taskFButton = document.getElementById('task-f');
+  if (taskFButton) {
+    taskFButton.addEventListener('click', () => {
+      translate(sideSize/2, 0);
+      setTimeout(() => { translate(sideSize/2, 0);}, 1000);
+      setTimeout(() => { rotate(45);}, 2000);
+      setTimeout(() => { translate(-sideSize/2, 0);}, 3000);
+      setTimeout(() => { translate(-sideSize/2, 0);}, 4000);
+    });
+  }
+  const taskGButton = document.getElementById('task-g');
+  if (taskGButton) {
+    taskGButton.addEventListener('click', () => separate(sideSize/2));
+  }
 }
 
 
