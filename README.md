@@ -1,5 +1,6 @@
 # dice-challenge
 Dice Challenge - Computer Graphics Class UNITAU 2023
+Co-Authored by https://github.com/SigmaPink
 
 (1) Build the following figure in your application, taking the following care:
 
